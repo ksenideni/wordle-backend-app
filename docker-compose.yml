@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  wordle-backend:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      TELEGRAM_TOKEN: ${TOKEN_KEY}
+      ENDPOINT_CORS_ALLOWED_ORIGINS: http://${FRONT_HOST_IP}
+  wordle-frontend:
+    build:
+      context: ../wordle-frontend
+      args:
+         WORDLE_BACKEND_HOST: http://${WORDLE_BACK_HOST_IP}:8080
+    ports:
+      - "80:80"
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+  tg-game-bot:
+    build: ../wordle-game-bot
+    ports:
+      - "8000:8080"
+    environment:
+      TOKEN_KEY: ${TOKEN_KEY}
+      BASE_GAME_URL_KEY: ${BASE_GAME_URL_KEY}
