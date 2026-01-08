@@ -17,7 +17,8 @@ data class RegisterStudentRequest(
     val firstName: String,
     val lastName: String,
     val password: String,
-    val invitationCode: String
+    val invitationCode: String? = null,
+    val classId: Int? = null
 )
 
 data class UserResponse(
@@ -37,49 +38,42 @@ class AuthController(
 
     @PostMapping("/register/teacher")
     fun registerTeacher(@RequestBody request: RegisterTeacherRequest): ResponseEntity<UserResponse> {
-        return try {
-            val user = userService.registerTeacher(
-                request.email,
-                request.firstName,
-                request.lastName,
-                request.password
+        val user = userService.registerTeacher(
+            request.email,
+            request.firstName,
+            request.lastName,
+            request.password
+        )
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            UserResponse(
+                id = user.id!!,
+                email = user.email,
+                firstName = user.firstName,
+                lastName = user.lastName,
+                role = user.role
             )
-            ResponseEntity.status(HttpStatus.CREATED).body(
-                UserResponse(
-                    id = user.id!!,
-                    email = user.email,
-                    firstName = user.firstName,
-                    lastName = user.lastName,
-                    role = user.role
-                )
-            )
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
-        }
+        )
     }
 
     @PostMapping("/register/student")
     fun registerStudent(@RequestBody request: RegisterStudentRequest): ResponseEntity<UserResponse> {
-        return try {
-            val user = userService.registerStudent(
-                request.login,
-                request.firstName,
-                request.lastName,
-                request.password,
-                request.invitationCode
+        val user = userService.registerStudent(
+            request.login,
+            request.firstName,
+            request.lastName,
+            request.password,
+            request.invitationCode,
+            request.classId
+        )
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            UserResponse(
+                id = user.id!!,
+                login = user.login,
+                firstName = user.firstName,
+                lastName = user.lastName,
+                role = user.role
             )
-            ResponseEntity.status(HttpStatus.CREATED).body(
-                UserResponse(
-                    id = user.id!!,
-                    login = user.login,
-                    firstName = user.firstName,
-                    lastName = user.lastName,
-                    role = user.role
-                )
-            )
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
-        }
+        )
     }
 }
 

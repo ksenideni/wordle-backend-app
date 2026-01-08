@@ -37,13 +37,36 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun registerStudent(login: String, firstName: String, lastName: String, password: String, invitationCode: String): User {
+    fun registerStudent(
+        login: String,
+        firstName: String,
+        lastName: String,
+        password: String,
+        invitationCode: String?,
+        classId: Int?
+    ): User {
         if (userRepository.existsByLogin(login)) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Login already exists")
         }
 
-        val classEntity = classRepository.findByInvitationCode(invitationCode)
-            .orElseThrow { ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid invitation code") }
+        if (invitationCode == null && classId == null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Either invitationCode or classId must be provided")
+        }
+
+        val finalClassId: Int = when {
+            classId != null -> {
+                if (!classRepository.existsById(classId)) {
+                    throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Class with id $classId not found")
+                }
+                classId
+            }
+            invitationCode != null -> {
+                val classEntity = classRepository.findByInvitationCode(invitationCode)
+                    .orElseThrow { ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid invitation code") }
+                classEntity.id ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Class ID is null")
+            }
+            else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Either invitationCode or classId must be provided")
+        }
 
         val passwordHash = passwordEncoder.encode(password)
         val now = LocalDateTime.now()
@@ -53,7 +76,7 @@ class UserService(
             lastName = lastName,
             role = "ROLE_STUDENT",
             passwordHash = passwordHash,
-            classId = classEntity.id,
+            classId = finalClassId,
             registrationDate = now,
             createdAt = now,
             updatedAt = now
