@@ -5,7 +5,7 @@ CREATE TABLE users (
     login VARCHAR(255) UNIQUE, -- NULL для учителей, обязателен для студентов (уникальный логин)
     first_name VARCHAR(255) NOT NULL, -- Имя
     last_name VARCHAR(255) NOT NULL, -- Фамилия
-    role VARCHAR(20) NOT NULL CHECK (role IN ('student', 'teacher')),
+    role VARCHAR(20) NOT NULL CHECK (role IN ('ROLE_STUDENT', 'ROLE_TEACHER')),
     password_hash VARCHAR(255) NOT NULL, -- Обязателен для всех пользователей
     class_id INTEGER, -- NULL для учителей, обязателен для студентов (выбирается при регистрации)
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -32,23 +32,23 @@ ALTER TABLE users ADD CONSTRAINT fk_users_class
 -- Ограничения безопасности для ролей
 -- Учитель НЕ может быть в классе (class_id должен быть NULL)
 ALTER TABLE users ADD CONSTRAINT check_teacher_no_class 
-    CHECK (role != 'teacher' OR class_id IS NULL);
+    CHECK (role != 'ROLE_TEACHER' OR class_id IS NULL);
 
 -- Учитель ДОЛЖЕН иметь email
 ALTER TABLE users ADD CONSTRAINT check_teacher_has_email 
-    CHECK (role != 'teacher' OR email IS NOT NULL);
+    CHECK (role != 'ROLE_TEACHER' OR email IS NOT NULL);
 
 -- Учитель НЕ должен иметь login
 ALTER TABLE users ADD CONSTRAINT check_teacher_no_login 
-    CHECK (role != 'teacher' OR login IS NULL);
+    CHECK (role != 'ROLE_TEACHER' OR login IS NULL);
 
 -- Студент ДОЛЖЕН иметь login
 ALTER TABLE users ADD CONSTRAINT check_student_has_login 
-    CHECK (role != 'student' OR login IS NOT NULL);
+    CHECK (role != 'ROLE_STUDENT' OR login IS NOT NULL);
 
 -- Студент ДОЛЖЕН быть привязан к классу (class_id обязателен)
 ALTER TABLE users ADD CONSTRAINT check_student_has_class 
-    CHECK (role != 'student' OR class_id IS NOT NULL);
+    CHECK (role != 'ROLE_STUDENT' OR class_id IS NOT NULL);
 
 -- Таблица словарей
 CREATE TABLE dictionaries (
