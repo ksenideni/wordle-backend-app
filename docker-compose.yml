@@ -1,20 +1,51 @@
 version: "3.9"
 services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: wordle
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   wordle-backend:
     build: .
     ports:
       - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
+      # Redis Configuration
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-      TELEGRAM_TOKEN: ${TOKEN_KEY}
-      ENDPOINT_CORS_ALLOWED_ORIGINS: http://${FRONT_HOST_IP}
+      REDIS_USER: default
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: wordle
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      # Telegram Configuration
+      TELEGRAM_TOKEN: 5390552790:AAH1Kb6qgMLoIcBL6MsnUxlmrByJ1RzCubo
+      # CORS Configuration
+      ENDPOINT_CORS_ALLOWED_ORIGINS: http://localhost
   wordle-frontend:
     build:
       context: ../wordle-frontend
       args:
-         WORDLE_BACKEND_HOST: http://${WORDLE_BACK_HOST_IP}:8080
+         WORDLE_BACKEND_HOST: http://localhost:8080
     ports:
       - "80:80"
   redis:
@@ -27,5 +58,8 @@ services:
     ports:
       - "8000:8080"
     environment:
-      TOKEN_KEY: ${TOKEN_KEY}
-      BASE_GAME_URL_KEY: ${BASE_GAME_URL_KEY}
+      TOKEN_KEY: 5390552790:AAH1Kb6qgMLoIcBL6MsnUxlmrByJ1RzCubo
+      BASE_GAME_URL_KEY: https://localhost:80
+
+volumes:
+  postgres_data:
