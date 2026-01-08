@@ -43,5 +43,13 @@ class ClassService(
             .orElseThrow { RuntimeException("User not found") }
         return user.id ?: throw RuntimeException("User ID is null")
     }
+
+    fun getClassesByTeacherId(teacherId: Int): List<Class> {
+        return classRepository.findByTeacherId(teacherId)
+    }
+
+    fun getStudentCount(classId: Int): Int {
+        return userRepository.countByClassId(classId)
+    }
 }
 

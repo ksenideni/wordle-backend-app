@@ -11,5 +11,6 @@ interface UserRepository : JpaRepository<User, Int> {
     fun findByLogin(login: String): Optional<User>
     fun existsByEmail(email: String): Boolean
     fun existsByLogin(login: String): Boolean
+    fun countByClassId(classId: Int): Int
 }
 

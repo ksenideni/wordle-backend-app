@@ -56,7 +56,6 @@ CREATE TABLE dictionaries (
     name VARCHAR(255) NOT NULL,
     theme VARCHAR(100), -- природа, литература, и т.д.
     created_by INTEGER REFERENCES users(id) ON DELETE SET NULL, -- учитель, создавший словарь
-    is_global BOOLEAN DEFAULT FALSE, -- глобальный словарь или пользовательский
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

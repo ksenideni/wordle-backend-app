@@ -8,5 +8,6 @@ import java.util.*
 @Repository
 interface ClassRepository : JpaRepository<Class, Int> {
     fun findByInvitationCode(invitationCode: String): Optional<Class>
+    fun findByTeacherId(teacherId: Int): List<Class>
 }
 

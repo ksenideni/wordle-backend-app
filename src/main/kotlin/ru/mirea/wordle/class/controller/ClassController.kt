@@ -20,6 +20,19 @@ data class ClassResponse(
     val createdAt: String? = null
 )
 
+data class ClassListItemResponse(
+    val id: Int,
+    val name: String,
+    val invitationCode: String,
+    val studentCount: Int,
+    val activeDictionaryId: Int? = null,
+    val createdAt: String? = null
+)
+
+data class ClassesListResponse(
+    val classes: List<ClassListItemResponse>
+)
+
 @RestController
 @RequestMapping("/classes")
 class ClassController(
@@ -45,6 +58,27 @@ class ClassController(
                 createdAt = classEntity.createdAt?.toString()
             )
         )
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('TEACHER')")
+    fun getClasses(authentication: Authentication): ResponseEntity<ClassesListResponse> {
+        val teacherId = classService.getTeacherIdFromAuthentication(authentication)
+        val classes = classService.getClassesByTeacherId(teacherId)
+        
+        val classesResponse = classes.map { classEntity ->
+            val studentCount = classService.getStudentCount(classEntity.id!!)
+            ClassListItemResponse(
+                id = classEntity.id,
+                name = classEntity.name,
+                invitationCode = classEntity.invitationCode,
+                studentCount = studentCount,
+                activeDictionaryId = classEntity.activeDictionaryId,
+                createdAt = classEntity.createdAt?.toString()
+            )
+        }
+        
+        return ResponseEntity.ok(ClassesListResponse(classes = classesResponse))
     }
 }
 
