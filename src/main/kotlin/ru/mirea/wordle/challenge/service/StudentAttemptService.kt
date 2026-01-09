@@ -12,6 +12,7 @@ import ru.mirea.wordle.challenge.repository.StudentAttemptRepository
 import ru.mirea.wordle.challenge.repository.DailyChallengeRepository
 import ru.mirea.wordle.challenge.service.ChallengeService
 import ru.mirea.wordle.dictionary.repository.DictionaryWordRepository
+import ru.mirea.wordle.ranking.service.RankingService
 import ru.mirea.wordle.user.repository.UserRepository
 import ru.mirea.wordle.user.service.UserService
 import java.time.LocalDateTime
@@ -35,6 +36,7 @@ class StudentAttemptService(
     private val dictionaryWordRepository: DictionaryWordRepository,
     private val userRepository: UserRepository,
     private val userService: UserService,
+    private val rankingService: RankingService,
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
 ) {
 
@@ -98,6 +100,11 @@ class StudentAttemptService(
             challenge.status = if (isCorrect) "completed" else "expired"
             challenge.updatedAt = LocalDateTime.now()
             challengeRepository.save(challenge)
+            
+            // Обновляем рейтинг только при успешном завершении (isCorrect)
+            if (isCorrect && points > 0) {
+                rankingService.updateRankingAfterAttempt(userId, finalChallengeId, points, true)
+            }
         }
 
         val now = LocalDateTime.now()
