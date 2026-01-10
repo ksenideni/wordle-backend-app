@@ -7,6 +7,14 @@
         <sqlFile path="db/changelog/changes/001-initial-schema.sql" relativeToChangelogFile="false"/>
     </changeSet>
 
+    <changeSet id="002-remove-dictionary-id-from-daily-challenges" author="wordle">
+        <sqlFile path="db/changelog/changes/002-remove-dictionary-id-from-daily-challenges.sql" relativeToChangelogFile="false"/>
+    </changeSet>
+
+    <changeSet id="003-remove-active-dictionary-id-from-classes" author="wordle">
+        <sqlFile path="db/changelog/changes/003-remove-active-dictionary-id-from-classes.sql" relativeToChangelogFile="false"/>
+    </changeSet>
+
 </databaseChangeLog>
 
 

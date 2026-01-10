@@ -8,32 +8,32 @@ import ru.mirea.wordle.user.repository.UserRepository
 import ru.mirea.wordle.`class`.repository.ClassRepository
 
 data class ClassRankingItem(
-    val user_id: Int,
-    val first_name: String,
-    val last_name: String,
-    val total_points: Int,
-    val daily_points: Int,
-    val current_streak: Int,
-    val longest_streak: Int,
-    val class_rank: Int?,
-    val last_activity: String? = null
+    val userId: Int,
+    val firstName: String,
+    val lastName: String,
+    val totalPoints: Int,
+    val dailyPoints: Int,
+    val currentStreak: Int,
+    val longestStreak: Int,
+    val classRank: Int?,
+    val lastActivity: String? = null
 )
 
 data class ClassRankingResponse(
-    val class_id: Int,
+    val classId: Int,
     val period: String,
     val rankings: List<ClassRankingItem>
 )
 
 data class GlobalRankingItem(
-    val user_id: Int,
-    val first_name: String,
-    val last_name: String,
-    val total_points: Int,
-    val current_streak: Int,
-    val longest_streak: Int,
-    val global_rank: Int,
-    val class_name: String? = null
+    val userId: Int,
+    val firstName: String,
+    val lastName: String,
+    val totalPoints: Int,
+    val currentStreak: Int,
+    val longestStreak: Int,
+    val globalRank: Int,
+    val className: String? = null
 )
 
 data class GlobalRankingResponse(
@@ -41,21 +41,21 @@ data class GlobalRankingResponse(
 )
 
 data class UserStatisticsResponse(
-    val user_id: Int,
-    val first_name: String,
-    val last_name: String,
+    val userId: Int,
+    val firstName: String,
+    val lastName: String,
     val login: String?,
-    val total_points: Int,
-    val daily_points: Int,
-    val current_streak: Int,
-    val longest_streak: Int,
-    val global_rank: Int,
-    val class_rank: Int?,
-    val total_challenges: Int,
-    val completed_challenges: Int,
-    val success_rate: Double,
-    val average_attempts: Double,
-    val last_activity: String? = null
+    val totalPoints: Int,
+    val dailyPoints: Int,
+    val currentStreak: Int,
+    val longestStreak: Int,
+    val globalRank: Int,
+    val classRank: Int?,
+    val totalChallenges: Int,
+    val completedChallenges: Int,
+    val successRate: Double,
+    val averageAttempts: Double,
+    val lastActivity: String? = null
 )
 
 data class StreakHistoryItem(
@@ -88,21 +88,21 @@ class RankingController(
         val rankingsResponse = rankings.map { ranking ->
             val user = userRepository.findById(ranking.userId).orElse(null)
             ClassRankingItem(
-                user_id = ranking.userId,
-                first_name = user?.firstName ?: "",
-                last_name = user?.lastName ?: "",
-                total_points = ranking.totalPoints,
-                daily_points = ranking.dailyPoints,
-                current_streak = ranking.currentStreak,
-                longest_streak = ranking.longestStreak,
-                class_rank = ranking.classRank,
-                last_activity = ranking.updatedAt?.toString()
+                userId = ranking.userId,
+                firstName = user?.firstName ?: "",
+                lastName = user?.lastName ?: "",
+                totalPoints = ranking.totalPoints,
+                dailyPoints = ranking.dailyPoints,
+                currentStreak = ranking.currentStreak,
+                longestStreak = ranking.longestStreak,
+                classRank = ranking.classRank,
+                lastActivity = ranking.updatedAt?.toString()
             )
         }
 
         return ResponseEntity.ok(
             ClassRankingResponse(
-                class_id = classId,
+                classId = classId,
                 period = period,
                 rankings = rankingsResponse
             )
@@ -122,14 +122,14 @@ class RankingController(
             }
             
             GlobalRankingItem(
-                user_id = ranking.userId,
-                first_name = user?.firstName ?: "",
-                last_name = user?.lastName ?: "",
-                total_points = ranking.totalPoints,
-                current_streak = ranking.currentStreak,
-                longest_streak = ranking.longestStreak,
-                global_rank = ranking.globalRank ?: 0,
-                class_name = className
+                userId = ranking.userId,
+                firstName = user?.firstName ?: "",
+                lastName = user?.lastName ?: "",
+                totalPoints = ranking.totalPoints,
+                currentStreak = ranking.currentStreak,
+                longestStreak = ranking.longestStreak,
+                globalRank = ranking.globalRank ?: 0,
+                className = className
             )
         }
 
@@ -145,21 +145,21 @@ class RankingController(
         
         return ResponseEntity.ok(
             UserStatisticsResponse(
-                user_id = statistics.userId,
-                first_name = statistics.firstName,
-                last_name = statistics.lastName,
+                userId = statistics.userId,
+                firstName = statistics.firstName,
+                lastName = statistics.lastName,
                 login = statistics.login,
-                total_points = statistics.totalPoints,
-                daily_points = statistics.dailyPoints,
-                current_streak = statistics.currentStreak,
-                longest_streak = statistics.longestStreak,
-                global_rank = statistics.globalRank,
-                class_rank = statistics.classRank,
-                total_challenges = statistics.totalChallenges,
-                completed_challenges = statistics.completedChallenges,
-                success_rate = statistics.successRate,
-                average_attempts = statistics.averageAttempts,
-                last_activity = statistics.lastActivity?.toString()
+                totalPoints = statistics.totalPoints,
+                dailyPoints = statistics.dailyPoints,
+                currentStreak = statistics.currentStreak,
+                longestStreak = statistics.longestStreak,
+                globalRank = statistics.globalRank,
+                classRank = statistics.classRank,
+                totalChallenges = statistics.totalChallenges,
+                completedChallenges = statistics.completedChallenges,
+                successRate = statistics.successRate,
+                averageAttempts = statistics.averageAttempts,
+                lastActivity = statistics.lastActivity?.toString()
             )
         )
     }
@@ -173,21 +173,21 @@ class RankingController(
         
         return ResponseEntity.ok(
             UserStatisticsResponse(
-                user_id = statistics.userId,
-                first_name = statistics.firstName,
-                last_name = statistics.lastName,
+                userId = statistics.userId,
+                firstName = statistics.firstName,
+                lastName = statistics.lastName,
                 login = statistics.login,
-                total_points = statistics.totalPoints,
-                daily_points = statistics.dailyPoints,
-                current_streak = statistics.currentStreak,
-                longest_streak = statistics.longestStreak,
-                global_rank = statistics.globalRank,
-                class_rank = statistics.classRank,
-                total_challenges = statistics.totalChallenges,
-                completed_challenges = statistics.completedChallenges,
-                success_rate = statistics.successRate,
-                average_attempts = statistics.averageAttempts,
-                last_activity = statistics.lastActivity?.toString()
+                totalPoints = statistics.totalPoints,
+                dailyPoints = statistics.dailyPoints,
+                currentStreak = statistics.currentStreak,
+                longestStreak = statistics.longestStreak,
+                globalRank = statistics.globalRank,
+                classRank = statistics.classRank,
+                totalChallenges = statistics.totalChallenges,
+                completedChallenges = statistics.completedChallenges,
+                successRate = statistics.successRate,
+                averageAttempts = statistics.averageAttempts,
+                lastActivity = statistics.lastActivity?.toString()
             )
         )
     }

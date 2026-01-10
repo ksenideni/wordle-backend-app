@@ -12,26 +12,25 @@ import java.time.LocalDate
 
 data class CreateClassChallengeRequest(
     val date: String? = null,
-    val dictionary_id: Int? = null,
+    val dictionaryId: Int? = null,
     val word: String? = null
 )
 
 data class CreateStudentChallengeRequest(
     val date: String? = null,
-    val dictionary_id: Int,
+    val dictionaryId: Int? = null,
     val word: String? = null
 )
 
 data class CreateIndividualChallengesRequest(
     val date: String? = null,
-    val dictionary_id: Int
+    val dictionaryId: Int
 )
 
 data class ChallengeResponse(
     val id: Int,
     val date: String,
     val word: String,
-    val dictionary_id: Int,
     val class_id: Int? = null,
     val user_id: Int? = null,
     val status: String,
@@ -42,7 +41,6 @@ data class TodayChallengeResponse(
     val id: Int,
     val date: String,
     val word: String,
-    val dictionary_id: Int,
     val status: String,
     val attempts: List<AttemptResponse>,
     val remaining_attempts: Int,
@@ -118,7 +116,6 @@ class ChallengeController(
                 id = challenge.id,
                 date = challenge.date.toString(),
                 word = wordToShow,
-                dictionary_id = challenge.dictionaryId,
                 status = challenge.status,
                 attempts = attemptsResponse,
                 remaining_attempts = 6 - attempts.size,
@@ -139,7 +136,7 @@ class ChallengeController(
         val challenge = challengeService.createClassChallenge(
             classId = classId,
             date = date,
-            dictionaryId = request.dictionary_id,
+            dictionaryId = request.dictionaryId,
             word = request.word,
             teacherId = teacherId
         )
@@ -149,7 +146,6 @@ class ChallengeController(
                 id = challenge.id!!,
                 date = challenge.date.toString(),
                 word = challenge.word,
-                dictionary_id = challenge.dictionaryId,
                 class_id = challenge.classId,
                 user_id = challenge.userId,
                 status = challenge.status,
@@ -170,7 +166,7 @@ class ChallengeController(
         val challenge = challengeService.createStudentChallenge(
             studentId = studentId,
             date = date,
-            dictionaryId = request.dictionary_id,
+            dictionaryId = request.dictionaryId,
             word = request.word,
             teacherId = teacherId
         )
@@ -180,7 +176,6 @@ class ChallengeController(
                 id = challenge.id!!,
                 date = challenge.date.toString(),
                 word = challenge.word,
-                dictionary_id = challenge.dictionaryId,
                 class_id = challenge.classId,
                 user_id = challenge.userId,
                 status = challenge.status,
@@ -201,7 +196,7 @@ class ChallengeController(
         val challenges = challengeService.createIndividualChallengesForClass(
             classId = classId,
             date = date,
-            dictionaryId = request.dictionary_id,
+            dictionaryId = request.dictionaryId,
             teacherId = teacherId
         )
 

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*
 import ru.mirea.wordle.challenge.service.StudentAttemptService
 
 data class MakeAttemptRequest(
-    val guessed_word: String,
-    val challenge_id: Int? = null // опционально, если не указан - используется вызов на сегодня
+    val guessedWord: String,
+    val challengeId: Int? = null // опционально, если не указан - используется вызов на сегодня
 )
 
 data class MakeAttemptResponse(
@@ -50,7 +50,7 @@ class StudentAttemptController(
         authentication: Authentication
     ): ResponseEntity<MakeAttemptResponse> {
         val userId = attemptService.getUserIdFromAuthentication(authentication)
-        val attempt = attemptService.makeAttempt(request.guessed_word, userId, request.challenge_id)
+        val attempt = attemptService.makeAttempt(request.guessedWord, userId, request.challengeId)
 
         val result = objectMapper.readValue(attempt.result, Map::class.java)
         val remainingAttempts = 6 - attempt.attemptNumber

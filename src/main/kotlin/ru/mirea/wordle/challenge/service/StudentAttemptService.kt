@@ -167,7 +167,7 @@ class StudentAttemptService(
         // Остальные - серые
         for (i in positions.indices) {
             if (positions[i].color.isEmpty()) {
-                positions[i] = LetterPosition(positions[i].letter, "gray", i)
+                positions[i] = LetterPosition(positions[i].letter, "grey", i)
             }
         }
 

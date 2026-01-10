@@ -92,5 +92,26 @@ class UserService(
     fun findByLogin(login: String): User? {
         return userRepository.findByLogin(login).orElse(null)
     }
+
+    fun login(username: String, password: String): User {
+        // Пытаемся найти по email (для учителей)
+        var user = userRepository.findByEmail(username).orElse(null)
+        
+        // Если не найден по email, пытаемся найти по login (для студентов)
+        if (user == null) {
+            user = userRepository.findByLogin(username).orElse(null)
+        }
+        
+        if (user == null) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password")
+        }
+        
+        // Проверяем пароль
+        if (!passwordEncoder.matches(password, user.passwordHash)) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password")
+        }
+        
+        return user
+    }
 }
 

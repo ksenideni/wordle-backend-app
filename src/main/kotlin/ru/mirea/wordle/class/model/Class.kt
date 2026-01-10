@@ -19,9 +19,6 @@ class Class(
     @Column(name = "invitation_code", unique = true, nullable = false)
     val invitationCode: String,
 
-    @Column(name = "active_dictionary_id", nullable = true)
-    val activeDictionaryId: Int? = null,
-
     @Column(name = "created_at")
     val createdAt: LocalDateTime? = null,
 

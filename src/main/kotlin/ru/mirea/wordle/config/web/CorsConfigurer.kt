@@ -14,6 +14,10 @@ class CorsConfigurer(
         registry: CorsRegistry,
     ) {
         super.addCorsMappings(registry)
-        registry.addMapping("/**").allowedOrigins(frontendUrl)
+        registry.addMapping("/**")
+            .allowedOrigins(frontendUrl)
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+            .allowedHeaders("*")
+            .allowCredentials(true)
     }
 }

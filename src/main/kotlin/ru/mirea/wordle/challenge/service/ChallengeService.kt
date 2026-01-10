@@ -61,8 +61,6 @@ class ChallengeService(
         }
 
         val challengeDate = date ?: LocalDate.now()
-        val finalDictionaryId = dictionaryId ?: classEntity.activeDictionaryId
-            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Dictionary ID is required")
 
         // Проверяем, не существует ли уже вызов для класса на эту дату
         val existingChallenge = challengeRepository.findByDateAndClassIdAndUserIdIsNull(challengeDate, classId)
@@ -70,13 +68,26 @@ class ChallengeService(
             throw ResponseStatusException(HttpStatus.CONFLICT, "Challenge already exists for this class on this date")
         }
 
-        val finalWord = (word?.uppercase()) ?: getRandomWordFromDictionary(finalDictionaryId)
+        // Если слово передано явно, используем его. Иначе требуется dictionaryId для выбора случайного слова
+        val finalWord = if (word != null) {
+            val wordUpper = word.uppercase()
+            if (wordUpper.length != 5) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Word must be exactly 5 letters long")
+            }
+            if (!wordUpper.all { it.isLetter() }) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Word must contain only letters")
+            }
+            wordUpper
+        } else {
+            val finalDictionaryId = dictionaryId
+                ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Dictionary ID is required when word is not specified")
+            getRandomWordFromDictionary(finalDictionaryId)
+        }
 
         val now = LocalDateTime.now()
         val challenge = DailyChallenge(
             date = challengeDate,
             word = finalWord,
-            dictionaryId = finalDictionaryId,
             classId = classId,
             userId = null,
             status = "active",
@@ -91,7 +102,7 @@ class ChallengeService(
     fun createStudentChallenge(
         studentId: Int,
         date: LocalDate?,
-        dictionaryId: Int,
+        dictionaryId: Int?,
         word: String?,
         teacherId: Int
     ): DailyChallenge {
@@ -119,13 +130,26 @@ class ChallengeService(
             throw ResponseStatusException(HttpStatus.CONFLICT, "Challenge already exists for this student on this date")
         }
 
-        val finalWord = (word?.uppercase()) ?: getRandomWordFromDictionary(dictionaryId)
+        // Если слово передано явно, используем его. Иначе требуется dictionaryId для выбора случайного слова
+        val finalWord = if (word != null) {
+            val wordUpper = word.uppercase()
+            if (wordUpper.length != 5) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Word must be exactly 5 letters long")
+            }
+            if (!wordUpper.all { it.isLetter() }) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Word must contain only letters")
+            }
+            wordUpper
+        } else {
+            val finalDictionaryId = dictionaryId
+                ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Dictionary ID is required when word is not specified")
+            getRandomWordFromDictionary(finalDictionaryId)
+        }
 
         val now = LocalDateTime.now()
         val challenge = DailyChallenge(
             date = challengeDate,
             word = finalWord,
-            dictionaryId = dictionaryId,
             classId = null,
             userId = studentId,
             status = "active",
@@ -179,7 +203,6 @@ class ChallengeService(
             val challenge = DailyChallenge(
                 date = challengeDate,
                 word = randomWord,
-                dictionaryId = dictionaryId,
                 classId = null,
                 userId = student.id,
                 status = "active",

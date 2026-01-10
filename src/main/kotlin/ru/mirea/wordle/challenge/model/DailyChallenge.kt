@@ -17,9 +17,6 @@ class DailyChallenge(
     @Column(nullable = false, length = 50)
     val word: String,
 
-    @Column(name = "dictionary_id", nullable = false)
-    val dictionaryId: Int,
-
     @Column(name = "class_id", nullable = true)
     val classId: Int? = null,
 
